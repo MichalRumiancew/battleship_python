@@ -6,6 +6,8 @@ from random import randint
 ###################################
 EASY = "EASY"
 HARD = "HARD"
+No = "No"
+Yes = "Yes"
 game_still_going = True
 EMPTY = "0"
 player1 = "X"
@@ -18,7 +20,12 @@ multi = "1"
 live = "10"
 win = "GAME OVER"
 game = 3
-option_board = [ str(name), int(size), str(Lv), str(multi), str(name2), int(live), str(win), int(game)]
+ship = No
+row = 1
+col = 1
+row2 = 1
+col2 = 1
+option_board = [ str(name), int(size), str(Lv), str(multi), str(name2), int(live), str(win), int(game), str(ship), int(row), int(col), int(row2), int(col2)]
 ##################################
 
 def menu_main():
@@ -60,11 +67,12 @@ def menu_option(option_board):
         clean()
         print("\n  ")
         print("PLAYER - 1 NAME:            ", option_board[0], "          IF YOU WANT CHANGE PRESS N \n")
-        print("PLAYER - 2 NAME:           ", option_board[4], "          IF YOU WANT CHANGE PRESS P \n")
+        print("PLAYER - 2 NAME:            ", option_board[4], "         IF YOU WANT CHANGE PRESS P \n")
         print("SIZE OF ARRAY:                ", option_board[1], "             IF YOU WANT CHANGE PRESS A \n")
         print("AI LEVEL:                    ", option_board[2], "           IF YOU WANT CHANGE PRESS L \n")
         print("NUMBER OF BOARD:              ", option_board[3], "             IF YOU WANT CHANGE PRESS M \n")
-        print("NUMBER OF TURN:              ", option_board[5], "             IF YOU WANT CHANGE PRESS T \n")      
+        print("NUMBER OF TURN:               ", option_board[5], "            IF YOU WANT CHANGE PRESS T \n") 
+        print("INPUT SHIP:                   ", option_board[8], "            IF YOU WANT CHANGE PRESS I \n")     
         print("BACK                                          IF YOU WANT BACK PRESS B \n")
         input3 = input("CHOOSE OPTION :   ")
         if input3 == "N" or input3 == "n":      
@@ -78,7 +86,20 @@ def menu_option(option_board):
         if input3 == "P" or input3 == "p":      
             option_board[4] = change_name(name2)
         elif input3 == "T" or input3 == "t":
-            option_board[5] = change_live(option_board[5]) 
+            option_board[5] = change_live(option_board[5])
+        elif input3 == "I" or input3 == "i":
+            option_board[8] = in_ship(ship) 
+            if option_board[8] == "Yes":
+                option_board[9] = input_ship_x()
+                option_board[10] = input_ship_y()
+                option_board[11] = input_ship_x()
+                option_board[12] = input_ship_y()
+                print(option_board)
+                input("Press Enter")
+                return row, col
+            else:
+                pass
+
         elif input3 == "B" or input3 == "b":
              back = 0
         else:
@@ -116,6 +137,35 @@ def change_live(live):
         return option_board[5]
     except ValueError:
         return option_board[5]
+    
+def in_ship(ship):
+    if option_board[8] == "No":
+        return "Yes"
+    elif option_board[8] == "Yes":
+        return "No"
+
+def input_ship_x():
+    while True:
+        try:
+            x = int(input("Input ship row: "))
+            in_ship_row = int(x)-1
+            return in_ship_row
+        except ValueError:
+            print("Try again: ")
+        else:
+            return in_ship_row
+
+def input_ship_y():
+    while True:
+        try:
+            y = int(input("Input ship col: "))
+            in_ship_col = int(y)
+            return in_ship_col-1
+        except ValueError:
+            print("Try again: ")
+        else:
+            return in_ship_col
+
 
 def one_player(board, game_still_going, board2, option_board): 
     turn = 1
@@ -133,37 +183,66 @@ def ai_vs_player(board, game_still_going, board2, option_board):
     player = "Y"
     turn = 1
     player = init_move1(board, game_still_going, board2, option_board, turn, player)
-    return player    
+    return player   
+
+def ai_hard_vs_player(board, game_still_going, board2, option_board):
+    player = "Y"
+    turn = 1
+    player = init_move1(board, game_still_going, board2, option_board, turn, player)
+    return player
+
+def ship_choose(board, board2, option_board):
+
+    if option_board[8] == "Yes" and option_board[9] >= 0 and option_board[9] <= option_board[1] and option_board[10] >= 0 and option_board[10] <= option_board[1]and option_board[11] >= 0 and option_board[11] <= option_board[1] and option_board[12] >= 0 and option_board[12] <= option_board[1]: 
+        choose_size(board, board2, option_board)
+        print_board(board, board2, option_board)
+        ship_row = option_board[9]
+        ship_col = option_board[10]
+        ship2_row = option_board[11]
+        ship2_col = option_board[12]
+        
+
+    else:
+        if option_board[3] == "1":
+            choose_size(board, board2, option_board)
+            print_board(board, board2, option_board)
+            ship_row, ship_col = random_ship(board)
+            ship2_row = option_board[11]
+            ship2_col = option_board[12]
+            print(ship_row+1, ship_col+1)
+        
+            
+            
+        elif option_board[3] == "2":
+            choose_size(board, board2, option_board)
+            print_board(board, board2, option_board)
+            ship_row, ship_col = random_ship(board)
+            ship2_row, ship2_col = random_ship2(board2)
+            print(ship_row+1, ship_col+1)
+            print(ship2_row+1, ship2_col+1)
+
+    return ship_row, ship_col, ship2_row, ship2_col
+       
 
 def init_move1(board, game_still_going, board2, option_board, turn, player):
 
-    if option_board[3] == "1":
-        choose_size(board, board2, option_board)
-        print_board(board, board2, option_board)
-        ship_row, ship_col = random_ship(board)
-        print(ship_row, ship_col)
-        
-    elif option_board[3] == "2":
-        choose_size(board, board2, option_board)
-        print_board(board, board2, option_board)
-        ship_row, ship_col = random_ship(board)
-        ship2_row, ship2_col = random_ship2(board2)
-        print(ship_row, ship_col)
-        print(ship2_row, ship2_col)
-        
+    ship_row, ship_col, ship2_row, ship2_col = ship_choose(board, board2, option_board)
+   
+    
     while game_still_going:        
         if turn <=option_board[5]:
             if option_board[7] == 2 or  option_board[7] == 3 or option_board[3] == "2" :
                 player = flip_player(player)        
 
             if player == "X":
-                guess_row, guess_col, turn= shot(board, board2, option_board, player, turn)
+                guess_row, turn= shotx(board, board2, option_board, player, turn)
+                guess_col, turn = shoty(board, board2, option_board, player, turn)
                 if guess_row == ship_row and guess_col == ship_col:
                     print("Congratulations! You hit ship!")
                     board[ship_row][ship_col] = "+"
                     game_still_going = False
                     option_board[6] = "Winner is:  "
-                elif (guess_row < 0 or guess_row > int(option_board[1])) or (guess_col < 0 or guess_col > int(option_board[1])):
+                elif (guess_row < 0 or guess_row > int(option_board[1]-1)) or (guess_col < 0 or guess_col > int(option_board[1]-1)):
                     print("Aim at the sea")
                     input("Press Enter...")
                 elif (board[guess_row][guess_col]) == "X" or (board[guess_row][guess_col]) == "Y":
@@ -175,13 +254,14 @@ def init_move1(board, game_still_going, board2, option_board, turn, player):
                 turn = turn + 1
 
             elif player == "Y" and  option_board[3] == "1" and option_board[7] != 3 :
-                guess_row, guess_col, turn= shot(board, board2, option_board, player, turn)
+                guess_row, turn= shotx(board, board2, option_board, player, turn)
+                guess_col, turn = shoty(board, board2, option_board, player, turn)
                 if guess_row == ship_row and guess_col == ship_col:
                     print("Congratulations! You hit ship!")
                     board[ship_row][ship_col] = "#"
                     game_still_going = False
                     option_board[6] = "Winner is:  "
-                elif (guess_row < 0 or guess_row > int(option_board[1])) or (guess_col < 0 or guess_col > int(option_board[1])):
+                elif (guess_row < 0 or guess_row > int(option_board[1]-1)) or (guess_col < 0 or guess_col > int(option_board[1]-1)):
                     print("Aim at the sea")
                     input("Press Enter...")
                 elif(board[guess_row][guess_col]) == "X" or (board[guess_row][guess_col]) == "Y":
@@ -193,13 +273,14 @@ def init_move1(board, game_still_going, board2, option_board, turn, player):
                 turn = turn + 1
 
             elif player == "Y" and  option_board[3] == "2" and option_board[7] != 3 :
-                guess_row, guess_col, turn= shot(board, board2, option_board, player, turn)
+                guess_row, turn= shotx(board, board2, option_board, player, turn)
+                guess_col, turn = shoty(board, board2, option_board, player, turn)
                 if guess_row == ship2_row and guess_col == ship2_col:
                     print("Congratulations! You hit ship!")
                     board2[ship2_row][ship2_col] = "#"
                     game_still_going = False
                     option_board[6] = "Winner is:  "
-                elif (guess_row < 0 or guess_row > int(option_board[1])) or (guess_col < 0 or guess_col > int(option_board[1])):
+                elif (guess_row < 0 or guess_row > int(option_board[1]-1)) or (guess_col < 0 or guess_col > int(option_board[1]-1)):
                     print("Aim at the sea")
                     input("Press Enter...")
                 elif(board2[guess_row][guess_col]) == "X" or (board2[guess_row][guess_col]) == "Y":
@@ -211,13 +292,31 @@ def init_move1(board, game_still_going, board2, option_board, turn, player):
                 turn = turn + 1
 
             elif player == "Y" and  option_board[3] == "2" and option_board[7] == 3:
-                guess_row, guess_col, turn= shot_comp2(board, board2, option_board, player, turn)
+                guess_row, guess_col, turn= shot_comp(board, board2, option_board, player, turn)
                 if guess_row == ship2_row and guess_col == ship2_col:
                     print("Congratulations! You hit ship!")
                     board2[ship2_row][ship2_col] = "#"
                     game_still_going = False
                     option_board[6] = "Winner is:  "
-                elif (guess_row < 0 or guess_row > int(option_board[1])) or (guess_col < 0 or guess_col > int(option_board[1])):
+                elif (guess_row < 0 or guess_row > int(option_board[1]-1)) or (guess_col < 0 or guess_col > int(option_board[1]-1)):
+                    print("Aim at the sea")
+                    input("Press Enter...")
+                elif(board2[guess_row][guess_col]) == "X" or (board2[guess_row][guess_col]) == "Y":
+                    print("Try again or surrender!")
+                    input("Press Enter...")
+                else:
+                    print("You missed!")
+                    board2[guess_row][guess_col] = player
+                turn = turn + 1
+
+            elif player == "Y" and  option_board[3] == "2" and option_board[7] == 3 and option_board[2] != EASY:
+                guess_row, guess_col, turn= shot_comp(board, board2, option_board, player, turn)
+                if guess_row == ship2_row or guess_col == ship2_col:
+                    print("Congratulations! You hit ship!")
+                    board2[ship2_row][ship2_col] = "#"
+                    game_still_going = False
+                    option_board[6] = "Winner is:  "
+                elif (guess_row < 0 or guess_row > int(option_board[1]-1)) or (guess_col < 0 or guess_col > int(option_board[1]-1)):
                     print("Aim at the sea")
                     input("Press Enter...")
                 elif(board2[guess_row][guess_col]) == "X" or (board2[guess_row][guess_col]) == "Y":
@@ -235,7 +334,7 @@ def init_move1(board, game_still_going, board2, option_board, turn, player):
                     board[ship_row][ship_col] = "#"
                     game_still_going = False
                     option_board[6] = "Winner is:  "
-                elif (guess_row < 0 or guess_row > int(option_board[1])) or (guess_col < 0 or guess_col > int(option_board[1])):
+                elif (guess_row < 0 or guess_row > int(option_board[1]-1)) or (guess_col < 0 or guess_col > int(option_board[1]-1)):
                     print("Aim at the sea")
                     input("Press Enter...")
                 elif(board[guess_row][guess_col]) == "X" or (board[guess_row][guess_col]) == "Y":
@@ -245,14 +344,31 @@ def init_move1(board, game_still_going, board2, option_board, turn, player):
                     print("You missed!")
                     board[guess_row][guess_col] = player
                 turn = turn + 1
+
+            elif player == "Y" and  option_board[3] == "1" and option_board[7] == 3 and option_board[2] != EASY:
+                guess_row, guess_col, turn= shot_comp(board, board2, option_board, player, turn)
+                if guess_row == ship_row or guess_col == ship_col:
+                    print("Congratulations! You hit ship!")
+                    board[ship_row][ship_col] = "#"
+                    game_still_going = False
+                    option_board[6] = "Winner is:  "
+                elif (guess_row < 0 or guess_row > int(option_board[1]-1)) or (guess_col < 0 or guess_col > int(option_board[1]-1)):
+                    print("Aim at the sea")
+                    input("Press Enter...")
+                elif(board[guess_row][guess_col]) == "X" or (board[guess_row][guess_col]) == "Y":
+                    print("Try again or surrender!")
+                    input("Press Enter...")
+                else:
+                    print("You missed!")
+                    board[guess_row][guess_col] = player
+                turn = turn + 1
+
         else:    
             game_still_going = False
             end_game()   
         print_board(board, board2, option_board)
     return player
                   
-def ai_hard_vs_player():
-    pass
 
 def who_win(winner):
     print("\n", option_board[6], winner)
@@ -290,7 +406,7 @@ def choose_size(board, board2, option_board):
 def print_board(board, board2, option_board):  
     if option_board[3] == "1":
         print("\n")
-        print(name)
+        print(option_board[0])
         print("\n") 
         for row in board:
             print("----"*int(size))
@@ -298,53 +414,74 @@ def print_board(board, board2, option_board):
         return board  
     elif option_board[3] == "2":
         print("\n")
-        print(name)
+        print(option_board[0])
         print("\n")
         for row in board:
             print("----"*int(size))
             print((" | ").join(row) )
         print("\n")
         print("===="*int(size))
-        print(name2)
+        print("\n")
+        print(option_board[4])
         print("\n")
         for row in board2:
             print("----"*int(size))
             print((" | ").join(row) )
     return board, board2
 
-def shot(board, board2, option_board, player, turn):
+def shotx(board, board2, option_board, player, turn):
     print("\nNow is turn:", player)   
     print("\nTurn number: ", turn, "\n")
-    x = int(input("Guess Row:"))
-    y = int(input("Guess Col:"))
-    clean()
-    guess_row = x - 1
-    guess_col = y -1
-    return guess_row, guess_col, turn
+    
+    while True:
+        try:
+            x = input("Guess Row: ")
+            if x == "salva":
+                print("\n\n    Wielka przewaga gracza: ", player, " o imieniu:  ", option_board[0], "\n\n      Wielkie gratulacje dla niego!!!!")
+                print("\nWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW\nWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW\nWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW\nWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW\nWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW+........-#WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW\nWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW+.-..........-WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW\nWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW*.#............*WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW\nWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW+*-.-:....:-...+WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW\nWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW=+.#WW@..WWW#::=WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW\nWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW*.*@*.*:.=@+-#WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW\nWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW*....-@=.....*WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW\nWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW@##......*@WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW\nWWWWWWWWWWWWWWWWWWWWWWWWW:..+WWWWW@.*=**+*@:-WWWWWWW+:=WWWWWWWWWWWWWWWWWWWWWWWW\nWWWWWWWWWWWWWWWWWWWWWW@.......#WWWW:.==*#*=.+WWWWW*....-#WWWWWWWWWWWWWWWWWWWWWW\nWWWWWWWWWWWWWWWWWWWWWW=...*+:...:#WW=......#WWW#:....-...+WWWWWWWWWWWWWWWWWWWWW\nWWWWWWWWWWWWWWWWWWWWWWWWWWW#*-......+@WWWWW=:.....-..-:+=WWWWWWWWWWWWWWWWWWWWWW\nWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW@*-....-*:....-*@WWWWWWWWWWWWWWWWWWWWWWWWWWWWWW\nWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW@+:+-....+@WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW\nWWWWWWWWWWWWWWWWWWWWWWW*::+++:-......:=W@+.....+=@WWWWWWWWWWWWWWWWWWWWWWWWWWWWW\nWWWWWWWWWWWWWWWWWWWWWW*.........-*@WWWWWWWWW#+.-:.....:.*WWWWWWWWWWWWWWWWWWWWWW\nWWWWWWWWWWWWWWWWWWWWWWWW#.:*--#WWWWWWWWWWWWWWWWW*.+--.-+@WWWWWWWWWWWWWWWWWWWWWW\nWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW@++@WWWWWWWWWWWWWWWWWWWWWWWWW\nWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW\nWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW\nWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW")
+                input("\n\n Press enter")
+                end_game()
+                main(option_board)
+            elif x == "b":
+                end_game()
+                main(option_board)
+                
+            guess_row = int(x) - 1
+            return guess_row, turn
+        except ValueError:
+            print("Try again: ")
+        else:
+            return guess_row, turn
+
+
+def shoty(board, board2, option_board, player, turn):
+   
+    while True:
+        try:
+            y = int(input("Guess Col: "))
+            if y == "b":
+                end_game()
+                main(option_board)
+            guess_col = int(y) - 1
+            clean()
+            return guess_col, turn
+        except ValueError:
+            print("Try again: ")
+        else:
+            return guess_col, turn
 
 def shot_comp(board, board2, option_board, player, turn):
     print("\nNow is turn computer:", player)   
     print("\nTurn number: ", turn, "\n")
     x = randint(0, len(board) - 1)
     y = randint(0, len(board[0]) - 1)
-    print(x, y)
+    print(x+1, y+1)
     input("Press Enter")
     clean()
-    guess_row = x - 1
-    guess_col = y -1
+    guess_row = x
+    guess_col = y 
     return guess_row, guess_col, turn
 
-def shot_comp2(board, board2, option_board, player, turn):
-    print("\nNow is turn computer:", player)   
-    print("\nTurn number: ", turn, "\n")
-    x = randint(0, len(board2) - 1)
-    y = randint(0, len(board2[0]) - 1)
-    print(x, y)
-    input("Press Enter")
-    clean()
-    guess_row = x - 1
-    guess_col = y -1
-    return guess_row, guess_col, turn
 
 def clean():
     import os
@@ -392,11 +529,15 @@ def main(option_board):
             elif start == 3:
                 Lv = EASY
                 if Lv == EASY:
-                    ai_vs_player(board, game_still_going, board2, option_board)
-                    end_game()
+                    winner = ai_vs_player(board, game_still_going, board2, option_board)
+                    who_win(winner)
+                    del board
+                    del board2
                 else:
-                    ai_vs_player(board, game_still_going, board2, option_board)
-                    end_game()
+                    winner = ai_hard_vs_player(board, game_still_going, board2, option_board)
+                    who_win(winner)
+                    del board
+                    del board2
             elif start == 4:
                 return_game()
             else:
